@@ -23,6 +23,7 @@ const client = new MongoClient(uri, {
 
 client.connect((err) => {
   const donorsCollection = client.db("bloodBank").collection("donors");
+  const adminCollection = client.db("bloodBank").collection("admin");
 
   // to submit details to database
   app.post("/submitDetails", (req, res) => {
@@ -41,13 +42,22 @@ client.connect((err) => {
 
   // to delete specific resident from database
   app.delete("/deleteDonor/:id", (req, res) => {
-    //console.log(req.params.id);
     donorsCollection
       .deleteOne({ _id: ObjectId(req.params.id) })
       .then((result) => {
         console.log(result);
         //res.send(result.deletedCount > 0);
       });
+  });
+
+  // to verify the leader
+  app.get("/admin", (req, res) => {
+    //const email = req.query.email;
+    adminCollection.find({}).toArray((err, documents) => {
+      //res.send(documents.length > 0);
+      res.send(documents);
+      //console.log(documents);
+    });
   });
 
   console.log("Database Connected");
